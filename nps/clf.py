@@ -4,8 +4,8 @@ from nps.nps12 import systems_map_I
 
 def main(smiles: str):
 
-    res_I, _, _ = nps12.classifier("CCC", systems_map_I)
-    res_II, _, _ = nps12.classifier("CCC", systems_map_I)
+    res_I, _, _ = nps12.classifier(smiles, systems_map_I)
+    res_II, _, _ = nps12.classifier(smiles, systems_map_I)
 
     if res_I:
         predict = "NPS_I"
