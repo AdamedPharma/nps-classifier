@@ -256,7 +256,7 @@ def main(smiles):
 
     if round(Descriptors.ExactMolWt(mol), 2) <= 500:  
 
-        if find_substructure(systems_map_I, mol) is not None:
+        if find_substructure(systems_map_I, mol) is not False:
             substructure, matches, name = find_substructure(systems_map_I, mol)
             for suspected in matches:
                 res = get_central_atoms(mol, suspected)
