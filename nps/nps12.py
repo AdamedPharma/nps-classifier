@@ -388,111 +388,115 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
 
 
 def classifier(smiles: str, systems_map: dict) -> tuple:
+    
+    try:
+        smiles = max(smiles.split("."), key=len)  # remove the radicals
+        mol = Chem.MolFromSmiles(smiles)
+        desc = []
 
-    smiles = max(smiles.split("."), key=len)  # remove the radicals
-    mol = Chem.MolFromSmiles(smiles)
-    desc = []
+        mw = round(Descriptors.ExactMolWt(mol), 2)
+        if mw <= 500:
+            desc.append(f"Masa molowa: {mw}.")
+            if find_substructure(systems_map, mol) is not False:
+                substructure, matches, name = find_substructure(systems_map, mol)
+                desc.append(f"Znaleziono układ cykliczny: {name}.")
+                for suspected in matches:
+                    i = 0
+                    res = get_central_atoms(mol, suspected, desc)
+                    if res is not False:
+                        mol2edit = Chem.RWMol(mol)
+                        for atom in reversed(sorted(suspected)):
+                            mol2edit.RemoveAtom(atom)
+                        substituents = Chem.MolToSmiles(mol2edit, canonical=True).split(".")
 
-    mw = round(Descriptors.ExactMolWt(mol), 2)
-    if mw <= 500:
-        desc.append(f"Masa molowa: {mw}.")
-        if find_substructure(systems_map, mol) is not False:
-            substructure, matches, name = find_substructure(systems_map, mol)
-            desc.append(f"Znaleziono układ cykliczny: {name}.")
-            for suspected in matches:
-                i = 0
-                res = get_central_atoms(mol, suspected, desc)
-                if res is not False:
-                    mol2edit = Chem.RWMol(mol)
-                    for atom in reversed(sorted(suspected)):
-                        mol2edit.RemoveAtom(atom)
-                    substituents = Chem.MolToSmiles(mol2edit, canonical=True).split(".")
-
-                    to_m = []
-                    substituents4condense = []
-                    mol2substituents = Chem.RWMol(mol)
-                    res = sorted(res)
-                    for c_idx in res:
-                        mol2substituents.RemoveAtom(c_idx[0])
-                        substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[0] # move list to the next step instead od element
-                        to_m.append(Chem.MolToSmiles(mol2substituents, canonical=True).split("."))
-
-                        substituents4condense.append(substituent)
+                        to_m = []
+                        substituents4condense = []
                         mol2substituents = Chem.RWMol(mol)
+                        res = sorted(res)
+                        for c_idx in res:
+                            mol2substituents.RemoveAtom(c_idx[0])
+                            substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[0] # move list to the next step instead od element
+                            to_m.append(Chem.MolToSmiles(mol2substituents, canonical=True).split("."))
+
+                            substituents4condense.append(substituent)
+                            mol2substituents = Chem.RWMol(mol)
 
 
-                    s4condense = list((Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
-                    result = []
-                    if len(res) != len(substituents):  # validation for s order would be beneficial
-                        desc.append("Do weryfikacji.")
-                        desc = " ".join(desc)
-                        return False, desc, None
+                        s4condense = list((Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
+                        result = []
+                        if len(res) != len(substituents):  # validation for s order would be beneficial
+                            desc.append("Do weryfikacji.")
+                            desc = " ".join(desc)
+                            return False, desc, None
 
-                    for r, s in zip(res, to_m):
-                        s = [i for i in s if i in substituents]  # filtering
-                        if len(r) == 6:  # if condense is True
-                            s = s4condense[0]
-                        permitted_atoms = [6, 8, 7, 9, 17, 35, 53, 16]
-
-                        s = s[0]
-                        s = Chem.MolFromSmiles(s)
-
-                        non_ring_s, is_in_ring = if_in_ring(s, False)  # list of [bool, atom_idx]
-                        ring_s, _ = if_in_ring(s, True)
-                        is_in_ring = [i[1] for i in is_in_ring if i[1] is True].count(True)
-
-                        carbons = [atom.GetAtomicNum() == 6 for atom in s.GetAtoms()].count(True)
-                        num_heavy_atoms = s.GetNumHeavyAtoms()
-
-                        part_s = None
-                        ring_part_s = None
-
-                        if len(non_ring_s) > 0:  # s starts with aliphatic atom
-                            idx_to_remove = [i for i in range(len(non_ring_s), num_heavy_atoms)]
-                            part_s = Chem.RWMol(s)
-                            for atom in reversed(sorted(idx_to_remove)):
-                                part_s.RemoveAtom(atom)
-                        else:
-                            idx_to_remove = [i for i in range(len(ring_s), num_heavy_atoms)]
-                            ring_part_s = Chem.RWMol(s)
-                            for atom in reversed(sorted(idx_to_remove)):
-                                ring_part_s.RemoveAtom(atom)
-
-                        if r[2] == "N":
-                            desc.append(f"Podstawnik R1-2:")
-                            aliphatic_nitrogen = r12(s, part_s, ring_part_s, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
-                            result.append(aliphatic_nitrogen)
-
-                        if r[2] == "C" and r[4] is True:
-                            desc.append(f"Podstawnik R:")
-                            ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
-                            result.append(ring_carbon)
-
-                        if r[2] == "C" and r[4] is False:
-                            condense = False
+                        for r, s in zip(res, to_m):
+                            s = [i for i in s if i in substituents]  # filtering
                             if len(r) == 6:  # if condense is True
-                                condense = True
-                            desc.append(f"Podstawnik R3-6:")
-                            aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
-                            result.append(aliphatic_carbon)
+                                s = s4condense[0]
+                            permitted_atoms = [6, 8, 7, 9, 17, 35, 53, 16]
 
-                    i += 1
-                    desc = " ".join(desc)
-                    print(f"all {result}")
-                    if not all(i for i in result) and i < len(matches):
-                        desc = []
-                        continue
-                    else:
-                        return all(i for i in result), desc, suspected
+                            s = s[0]
+                            s = Chem.MolFromSmiles(s)
+
+                            non_ring_s, is_in_ring = if_in_ring(s, False)  # list of [bool, atom_idx]
+                            ring_s, _ = if_in_ring(s, True)
+                            is_in_ring = [i[1] for i in is_in_ring if i[1] is True].count(True)
+
+                            carbons = [atom.GetAtomicNum() == 6 for atom in s.GetAtoms()].count(True)
+                            num_heavy_atoms = s.GetNumHeavyAtoms()
+
+                            part_s = None
+                            ring_part_s = None
+
+                            if len(non_ring_s) > 0:  # s starts with aliphatic atom
+                                idx_to_remove = [i for i in range(len(non_ring_s), num_heavy_atoms)]
+                                part_s = Chem.RWMol(s)
+                                for atom in reversed(sorted(idx_to_remove)):
+                                    part_s.RemoveAtom(atom)
+                            else:
+                                idx_to_remove = [i for i in range(len(ring_s), num_heavy_atoms)]
+                                ring_part_s = Chem.RWMol(s)
+                                for atom in reversed(sorted(idx_to_remove)):
+                                    ring_part_s.RemoveAtom(atom)
+
+                            if r[2] == "N":
+                                desc.append(f"Podstawnik R1-2:")
+                                aliphatic_nitrogen = r12(s, part_s, ring_part_s, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
+                                result.append(aliphatic_nitrogen)
+
+                            if r[2] == "C" and r[4] is True:
+                                desc.append(f"Podstawnik R:")
+                                ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
+                                result.append(ring_carbon)
+
+                            if r[2] == "C" and r[4] is False:
+                                condense = False
+                                if len(r) == 6:  # if condense is True
+                                    condense = True
+                                desc.append(f"Podstawnik R3-6:")
+                                aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
+                                result.append(aliphatic_carbon)
+
+                        i += 1
+                        desc = " ".join(desc)
+                        print(f"all {result}")
+                        if not all(i for i in result) and i < len(matches):
+                            desc = []
+                            continue
+                        else:
+                            return all(i for i in result), desc, suspected
+
+            else:
+                desc.append("Struktura główna nie została znaleziona.")
+                return False, desc, None
 
         else:
-            desc.append("Struktura główna nie została znaleziona.")
-            return False, desc, None
+            desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
+            desc = " ".join(desc)
+            return False, desc, None  # mw above 500
 
-    else:
-        desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
-        desc = " ".join(desc)
-        return False, desc, None  # mw above 500
+    except Exception:
+        return False, ["Do weryfikacji"], None
 
 
 # res, desc, suspected = classifier(smiles, systems_map_I)
