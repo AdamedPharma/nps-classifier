@@ -7,10 +7,10 @@ def main(smiles: str):
     res_I, _, _ = nps12.classifier(smiles, systems_map_I)
     res_II, _, _ = nps12.classifier(smiles, systems_map_II)
 
-    if res_I:
-        predict = "NPS_I"
-    elif res_II:
+    if res_II:
         predict = "NPS_II"
+    elif res_I:
+        predict = "NPS_I"
     else:
         predict = "nie podlega"
 
