@@ -7,7 +7,7 @@ import numpy as np
 from io import BytesIO
 
 
-def highlighted_mol(smiles: str):
+def main(smiles: str):
 
     _, _, suspected_I = nps12.classifier(smiles, systems_map_I)
     _, _, suspected_II = nps12.classifier(smiles, systems_map_II)
@@ -32,4 +32,4 @@ def highlighted_mol(smiles: str):
 
     return imagedata
 
-# highlighted_mol("O=C(CN[C@@H](Cc1ccc(OC)cc1)C)c2ccc(O)c(c2)N")
+# main("O=C(CN[C@@H](Cc1ccc(OC)cc1)C)c2ccc(O)c(c2)N")
