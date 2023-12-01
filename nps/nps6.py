@@ -1,6 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem import Descriptors
-
+from nps4 import find_smarts_substructure
 
 systems_map = {
     "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
@@ -16,16 +16,16 @@ systems_map = {
 }
 
 
-def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple: 
-    substructure = None
-    for system, name in systems_map.items():
-        if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
-            substructure = Chem.MolFromSmarts(system)
-            matches = mol.GetSubstructMatches(substructure)
-            return substructure, matches, name
+# def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple: 
+#     substructure = None
+#     for system, name in systems_map.items():
+#         if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
+#             substructure = Chem.MolFromSmarts(system)
+#             matches = mol.GetSubstructMatches(substructure)
+#             return substructure, matches, name
 
-    if substructure is None:
-        return False
+#     if substructure is None:
+#         return False
         
 
 def classifier(smiles: str) -> tuple:
