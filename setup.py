@@ -7,8 +7,8 @@ setup(
     description="Module for substances classification as NPS",
     author='PD',
     install_requires=[
-      "rdkit==2022.9.5",
-      "matplotlib==3.7.2",
-      "numpy==1.26.1",
+      "rdkit==2023.3.1",
+      "matplotlib==1.25.0rc1",
+      "numpy==3.7.2",
     ]
 )
