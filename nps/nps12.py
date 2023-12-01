@@ -394,7 +394,8 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
         smiles = max(smiles.split("."), key=len)  # remove the radicals
         mol = Chem.MolFromSmiles(smiles)
         desc = []
-
+        mol2move = mol
+        
         mw = round(Descriptors.ExactMolWt(mol), 2)
         if mw <= 500:
             desc.append(f"Masa molowa: {mw}.")
@@ -428,7 +429,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                         if len(res) != len(substituents):  # validation for s order would be beneficial
                             desc.append("Do weryfikacji.")
                             desc = " ".join(desc)
-                            return False, desc, None
+                            return False, desc, None, mol2move
 
                         for r, s in zip(res, to_m):
                             s = [i for i in s if i in substituents]  # filtering
@@ -484,20 +485,20 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                             desc = []
                             continue
                         else:
-                            return all(i for i in result), desc, suspected
+                            return all(i for i in result), desc, suspected, mol2move
 
             else:
                 desc.append("Struktura główna nie została znaleziona.")
                 desc = " ".join(desc)
-                return False, desc, None
+                return False, desc, None, mol2move
 
         else:
             desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
             desc = " ".join(desc)
-            return False, desc, None  # mw above 500
+            return False, desc, None, mol2move  # mw above 500
 
     except Exception:
-        return False, "Do weryfikacji", None
+        return False, "Do weryfikacji", None, mol2move
 
 
 # res, desc, suspected = classifier(smiles, systems_map_I)
