@@ -2,6 +2,7 @@ from rdkit import Chem
 from rdkit.Chem import Fragments
 from rdkit.Chem import Descriptors
 from collections import Counter
+from typing import Union
 
 
 systems_map_I = {
@@ -100,7 +101,7 @@ systems_map_II = {
 }
 
 
-def find_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple:
+def find_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> Union[bool, Chem.rdchem.Mol, tuple]:
     substructure = None
     for system, name in systems_map.items():
         if mol.HasSubstructMatch(Chem.MolFromSmiles(system)):
@@ -112,7 +113,7 @@ def find_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rd
         return False
 
 
-def get_central_atoms(mol: Chem.rdchem.Mol, suspected: tuple, desc: list) -> list | bool:
+def get_central_atoms(mol: Chem.rdchem.Mol, suspected: tuple, desc: list) -> Union[list, bool]:
     res = []
     rings = mol.GetRingInfo()  # information about the all rings in mol object
     atom_rings = rings.AtomRings()
