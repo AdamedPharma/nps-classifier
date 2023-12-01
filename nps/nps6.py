@@ -31,7 +31,6 @@ def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | 
 def classifier(smiles: str) -> tuple:
     
     try:
-        mol = Chem.MolFromSmiles(smiles)
         smiles = max(smiles.split("."), key=len)  # remove the radicals
         mol = Chem.MolFromSmiles(smiles)
         desc = []
