@@ -479,15 +479,16 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                         i += 1
                         desc = " ".join(desc)
-                        print(f"all {result}")
                         if not all(i for i in result) and i < len(matches):
                             desc = []
                             continue
                         else:
+                            desc = " ".join(desc)
                             return all(i for i in result), desc, suspected
 
             else:
                 desc.append("Struktura główna nie została znaleziona.")
+                desc = " ".join(desc)
                 return False, desc, None
 
         else:
@@ -496,7 +497,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
             return False, desc, None  # mw above 500
 
     except Exception:
-        return False, ["Do weryfikacji"], None
+        return False, "Do weryfikacji", None
 
 
 # res, desc, suspected = classifier(smiles, systems_map_I)
