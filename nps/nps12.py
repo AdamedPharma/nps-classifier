@@ -484,7 +484,6 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                             desc = []
                             continue
                         else:
-                            desc = " ".join(desc)
                             return all(i for i in result), desc, suspected
 
             else:
