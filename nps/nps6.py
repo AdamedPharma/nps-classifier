@@ -46,12 +46,13 @@ def classifier(smiles: str) -> tuple:
                         desc = " ".join(desc)
                         return True, desc, suspected
                     else:
-                        desc = " ".join(desc)
                         desc.append(f"Znaleziono strukturę I.")
+                        desc = " ".join(desc)
                         return True, desc, suspected
         
             else:
                 desc.append("Struktura główna nie została znaleziona.")
+                desc = " ".join(desc)
                 return False, desc, None
         
         else:
@@ -60,7 +61,7 @@ def classifier(smiles: str) -> tuple:
             return False, desc, None  # mw above 500
             
     except Exception:
-        return False, ["Do weryfikacji"], None
+        return False, "Do weryfikacji", None
 
 
 # smiles = "CC(C)CC1C(=O)N2CCCC2C3(N1C(=O)C(O3)(C(C)C)NC(=O)C4CN(C5CC6=CNC7=CC=CC(=C67)C5=C4)C)O"
