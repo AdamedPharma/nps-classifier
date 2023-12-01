@@ -43,9 +43,10 @@ def classifier(smiles: str) -> tuple:
                     suspected = list(matches[0])
                     if "structure_II" in name:
                         desc.append(f"Znaleziono strukturę II.")
-                        
+                        desc = " ".join(desc)
                         return True, desc, suspected
                     else:
+                        desc = " ".join(desc)
                         desc.append(f"Znaleziono strukturę I.")
                         return True, desc, suspected
         
