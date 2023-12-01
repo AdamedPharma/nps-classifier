@@ -9,11 +9,10 @@ from io import BytesIO
 
 def main(smiles: str):
 
-    _, _, suspected_I = nps12.classifier(smiles, systems_map_I)
-    _, _, suspected_II = nps12.classifier(smiles, systems_map_II)
+    _, _, suspected_I, mol = nps12.classifier(smiles, systems_map_I)
+    _, _, suspected_II, mol = nps12.classifier(smiles, systems_map_II)
 
     suspected = ()
-    mol = Chem.MolFromSmiles(smiles)
 
     if suspected_II:
         suspected = suspected_II
