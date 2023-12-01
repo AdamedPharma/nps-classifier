@@ -9,6 +9,6 @@ setup(
     install_requires=[
       "rdkit==2023.3.1",
       "matplotlib==3.8.0",
-      "numpy==1.25.0rc1",
+      "numpy==1.26.0",
     ]
 )
