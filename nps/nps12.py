@@ -426,10 +426,10 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                         s4condense = list((Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
                         result = []
-                        if len(res) != len(substituents):  # validation for s order would be beneficial
-                            desc.append("Do weryfikacji.")
-                            desc = " ".join(desc)
-                            return False, desc, None, mol2move
+                        # if len(res) != len(substituents):  # validation for s order would be beneficial
+                        #     desc.append("Do weryfikacji.")
+                        #     desc = " ".join(desc)
+                        #     return False, desc, None, mol2move
 
                         for r, s in zip(res, to_m):
                             s = [i for i in s if i in substituents]  # filtering
