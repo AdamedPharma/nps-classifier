@@ -221,7 +221,7 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
         desc.append("Zawiera niedozwolony podstawnik cykliczny.")
         return False
     else:
-        if num_heavy_atoms <= 8:
+        if num_heavy_atoms <= 14:
             if all(atom.GetAtomicNum() in permitted_atoms for atom in s.GetAtoms()):
 
                 if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
@@ -239,18 +239,22 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                         if Fragments.fr_COO(tocheck) == 1:
 
                             desc.append(f"Zawiera grupę karboksylową; {part_s_carbons} atomów węgla. "
-                                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            if second_num_s:
+                                desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
 
                         else:
-                            desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla. "
-                                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla."
+                            if second_num_s:
+                                desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
+                            
                 if part_s_carbons <= 6:
                     if Fragments.fr_sulfone(part_s) == 1:
                         desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
                         return True
-                    if Fragments.fr_nitro(part_s) == 1:  # cannot find nitro group directly attach to benzene ring
+                        
+                    if Fragments.fr_nitro(part_s) == 1: 
                         desc.append(f"Zawiera grupę nitrową; {part_s_carbons} atomów węgla.")
                         return True
 
@@ -426,10 +430,6 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                         s4condense = list((Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
                         result = []
-                        # if len(res) != len(substituents):  # validation for s order would be beneficial
-                        #     desc.append("Do weryfikacji.")
-                        #     desc = " ".join(desc)
-                        #     return False, desc, None, mol2move
 
                         for r, s in zip(res, to_m):
                             s = [i for i in s if i in substituents]  # filtering
@@ -501,4 +501,4 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
         return False, "Do weryfikacji", None, mol2move
 
 
-# res, desc, suspected = classifier(smiles, systems_map_I)
+# res, desc, suspected, mol2move = classifier(smiles, systems_map_I)
