@@ -4,7 +4,6 @@ from rdkit.Chem import Descriptors
 from collections import Counter
 from typing import Union
 
-
 systems_map_I = {
     "O1C(CCN)=CC2=CC3=C(C=CO3)C=C12": "benzodifuranyl",
     "O1C=C(CCN)C2=CC3=C(C=CO3)C=C12": "benzodifuranyl",
@@ -211,7 +210,6 @@ def until(s, stop_a, in_add):
 
 def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
        carbons: int, permitted_atoms: list, desc: list) -> bool:
-
     second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
@@ -238,23 +236,19 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
 
                         if Fragments.fr_COO(tocheck) == 1:
 
-                            desc.append(f"Zawiera grupę karboksylową; {part_s_carbons} atomów węgla.")
-                            if second_num_s:
-                                desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            desc.append(f"Zawiera grupę karboksylową; {part_s_carbons} atomów węgla. "
+                                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
 
                         else:
-                            desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla.")
-                            if second_num_s:
-                                desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla. "
+                                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
-                            
                 if part_s_carbons <= 6:
                     if Fragments.fr_sulfone(part_s) == 1:
                         desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
                         return True
-                        
-                    if Fragments.fr_nitro(part_s) == 1: 
+                    if Fragments.fr_nitro(part_s) == 1:  # cannot find nitro group directly attach to benzene ring
                         desc.append(f"Zawiera grupę nitrową; {part_s_carbons} atomów węgla.")
                         return True
 
@@ -264,9 +258,8 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                             smi = Chem.MolToSmiles(until(s, p_at, -1))
                             smi = Chem.MolFromSmiles(smi)
                             if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
-
                                 desc.append(f"Zawiera łańcuch węglowy; {smi.GetNumHeavyAtoms()} atomów węgla; "
-                                            f"druga część podstawnika zawiera {num_heavy_atoms-smi.GetNumHeavyAtoms()} atomów.")
+                                            f"druga część podstawnika zawiera {num_heavy_atoms - smi.GetNumHeavyAtoms()} atomów.")
                                 return True
 
                 else:
@@ -279,7 +272,6 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
 
 def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mol, is_in_ring: int,
         num_heavy_atoms: int, permitted_atoms: list, desc: list) -> bool:
-
     second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
@@ -294,20 +286,19 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 return True
         else:
             if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
-                desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
-                if second_num_s:
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla; "
+                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
             if Fragments.fr_Al_OH(part_s) == 1:
-                desc.append(f"Zawiera grupę hydroksylową; {part_s_carbons} atomów węgla.")
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera grupę hydroksylową; {part_s_carbons} atomów węgla; "
+                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
 
                 return True
 
             if sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6:
-                desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla.")
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla; "
+                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
 
                 return True
 
@@ -329,7 +320,6 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
 
 def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mol, condense: bool, is_in_ring: int,
           num_heavy_atoms: int, permitted_atoms: list, desc: list) -> bool:
-
     second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
@@ -364,7 +354,8 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
                     return True
 
                 tocheck = until(part_s, "O", 1)
-                if Fragments.fr_C_O_noCOO(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in tocheck.GetAtoms()].count(True) <= 10:
+                if Fragments.fr_C_O_noCOO(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in
+                                                             tocheck.GetAtoms()].count(True) <= 10:
                     desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla. "
                                 f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
@@ -376,7 +367,8 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
 
             if part_s.HasSubstructMatch(Chem.MolFromSmiles("S")):
                 tocheck = until(part_s, "S", 1)
-                if Fragments.fr_sulfone(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in tocheck.GetAtoms()].count(True) <= 10:
+                if Fragments.fr_sulfone(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in
+                                                           tocheck.GetAtoms()].count(True) <= 10:
                     desc.append(f"Zawiera grupę alkilosulfonylową; {part_s_carbons} atomów węgla. "
                                 f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
@@ -394,13 +386,12 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
 
 
 def classifier(smiles: str, systems_map: dict) -> tuple:
-    
     try:
         smiles = max(smiles.split("."), key=len)  # remove the radicals
         mol = Chem.MolFromSmiles(smiles)
         desc = []
         mol2move = mol
-        
+
         mw = round(Descriptors.ExactMolWt(mol), 2)
         if mw <= 500:
             desc.append(f"Masa molowa: {mw}.")
@@ -422,14 +413,15 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                         res = sorted(res)
                         for c_idx in res:
                             mol2substituents.RemoveAtom(c_idx[0])
-                            substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[0] # move list to the next step instead od element
+                            substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[
+                                0]  # move list to the next step instead od element
                             to_m.append(Chem.MolToSmiles(mol2substituents, canonical=True).split("."))
 
                             substituents4condense.append(substituent)
                             mol2substituents = Chem.RWMol(mol)
 
-
-                        s4condense = list((Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
+                        s4condense = list(
+                            (Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
                         result = []
 
                         for r, s in zip(res, to_m):
@@ -464,7 +456,8 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                             if r[2] == "N":
                                 desc.append(f"Podstawnik R1-2:")
-                                aliphatic_nitrogen = r12(s, part_s, ring_part_s, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
+                                aliphatic_nitrogen = r12(s, part_s, ring_part_s, is_in_ring, num_heavy_atoms,
+                                                         permitted_atoms, desc)
                                 result.append(aliphatic_nitrogen)
 
                             if r[2] == "C" and r[4] is True:
@@ -477,7 +470,8 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                 if len(r) == 6:  # if condense is True
                                     condense = True
                                 desc.append(f"Podstawnik R3-6:")
-                                aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms, permitted_atoms, desc)
+                                aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms,
+                                                         permitted_atoms, desc)
                                 result.append(aliphatic_carbon)
 
                         i += 1
