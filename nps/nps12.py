@@ -286,19 +286,22 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 return True
         else:
             if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
-                desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla; "
-                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
+                if second_num_s:
+                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
             if Fragments.fr_Al_OH(part_s) == 1:
-                desc.append(f"Zawiera grupę hydroksylową; {part_s_carbons} atomów węgla; "
-                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera grupę hydroksylową; {part_s_carbons} atomów węgla.")
+                if second_num_s:
+                desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
 
                 return True
 
             if sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6:
-                desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla; "
-                            f"druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla.")
+                if second_num_s:
+                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
 
                 return True
 
