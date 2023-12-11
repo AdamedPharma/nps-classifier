@@ -230,12 +230,16 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                 if Fragments.fr_halogen(s) == 1 and num_heavy_atoms == 1:
                     desc.append(f"Zawiera atom {Chem.MolToSmiles(s)}.")
                     return True
-
+                    
+                if Fragments.fr_COO2(part_s) == 1:
+                    desc.append(f"Zawiera grupę karboksylową.")
+                    return True
+                    
                 if part_s.HasSubstructMatch(Chem.MolFromSmiles("O")):
                     if part_s.GetNumHeavyAtoms() == 1:
                         desc.append("Zawiera niedozwoloną grupę hydroksylową lub karbonylową.")
                         return False
-                        
+                
                     tocheck = until(part_s, "O", 1)
                     if [atom.GetAtomicNum() == 6 for atom in tocheck.GetAtoms()].count(True) <= 6:
 
@@ -258,7 +262,7 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                         return True
                         
                     # if Fragments.fr_nitro(part_s) == 1:
-                    if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("NO"))) == 1
+                    if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("NO"))) == 1:
                         desc.append(f"Zawiera grupę nitrową.")
                         return True
 
