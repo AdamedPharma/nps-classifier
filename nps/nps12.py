@@ -245,8 +245,8 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                                 desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
 
-                        else:
-                            desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla.")
+                        elif all(atom.GetAtomicNum() in [6, 8] for atom in tocheck.GetAtoms()):
+                            desc.append(f"Zawiera grupę alkoksylową; {part_s_carbons} atomów węgla.")
                             if second_num_s:
                                 desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
