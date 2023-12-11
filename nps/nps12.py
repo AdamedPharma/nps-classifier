@@ -273,6 +273,11 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                 else:
                     desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów.")
                     return False
+
+            else:
+                desc.append("Nie spełnia warunków. Zawiera niedozwolony atom.")
+                return False
+        
         else:
             desc.append(f"Zawiera niedopuszczalną liczbę atomów: {num_heavy_atoms}.")
             return False  # too many atoms
