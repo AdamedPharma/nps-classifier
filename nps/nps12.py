@@ -261,14 +261,15 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                         desc.append(f"Zawiera grupę nitrową; {part_s_carbons} atomów węgla.")
                         return True
 
-                if s.GetAtomWithIdx(0).GetAtomicNum() == 6:
+                if part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
                     for p_at in [Chem.Atom(at).GetSymbol() for at in permitted_atoms[1:]]:
-                        if s.HasSubstructMatch(Chem.MolFromSmiles(p_at)):
-                            smi = Chem.MolToSmiles(until(s, p_at, -1))
+                        if part_s.HasSubstructMatch(Chem.MolFromSmiles(p_at)):
+                            smi = Chem.MolToSmiles(until(part_s, p_at, 0))
+                            smi = [i for i in smi.split(".") if "C" in i][0] 
                             smi = Chem.MolFromSmiles(smi)
                             if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
                                 desc.append(f"Zawiera łańcuch węglowy; {smi.GetNumHeavyAtoms()} atomów węgla; "
-                                            f"druga część podstawnika zawiera {num_heavy_atoms - smi.GetNumHeavyAtoms()} atomów.")
+                                            f"druga część podstawnika zawiera {num_heavy_atoms - smi.GetNumHeavyAtoms()} dozwolonych atomów.")
                                 return True
 
                 else:
