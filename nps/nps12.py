@@ -257,8 +257,9 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                         desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
                         return True
                         
-                    if Fragments.fr_nitro(part_s) == 1:  # cannot find nitro group directly attach to benzene ring
-                        desc.append(f"Zawiera grupę nitrową; {part_s_carbons} atomów węgla.")
+                    # if Fragments.fr_nitro(part_s) == 1:
+                    if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("NO"))) == 1
+                        desc.append(f"Zawiera grupę nitrową.")
                         return True
 
                 if part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
