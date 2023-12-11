@@ -396,7 +396,25 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
         return False
 
 
+def matching(res: list, to_m: list, substituents: list, s4condense: list) -> list:
+    r_s = []
+    nitro_s = []
+    for r, s in zip(res, to_m):
+        s = [i for i in s if i in substituents]  # filtering
+        if len(r) == 6:  # if condense is True
+            s = s4condense[0]
+        if len(s) == 2 and r[2] == "N":
+            nitro_s = [[r, [s[0]]], [r, [s[1]]]]
+        if len(s) == 1:
+            r_s.append([r, s])
+    if nitro_s:
+        r_s.extend(nitro_s)
+
+    return r_s
+    
+
 def classifier(smiles: str, systems_map: dict) -> tuple:
+    
     try:
         smiles = max(smiles.split("."), key=len)  # remove the radicals
         mol = Chem.MolFromSmiles(smiles)
@@ -435,15 +453,18 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                             (Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
                         result = []
 
-                        for r, s in zip(res, to_m):
-                            s = [i for i in s if i in substituents]  # filtering
-                            if len(r) == 6:  # if condense is True
-                                s = s4condense[0]
-                            permitted_atoms = [6, 8, 7, 9, 17, 35, 53, 16]
+                        # for r, s in zip(res, to_m):
+                        #     s = [i for i in s if i in substituents]  # filtering
+                        #     if len(r) == 6:  # if condense is True
+                        #         s = s4condense[0]
 
-                            s = s[0]
+                        for r_s in matching(res, to_m, substituents, s4condense):
+                            r = r_s[0]
+                            s = r_s[1][0]
+
+                            # s = s[0]
                             s = Chem.MolFromSmiles(s)
-
+                            permitted_atoms = [6, 8, 7, 9, 17, 35, 53, 16]
                             non_ring_s, is_in_ring = if_in_ring(s, False)  # list of [bool, atom_idx]
                             ring_s, _ = if_in_ring(s, True)
                             is_in_ring = [i[1] for i in is_in_ring if i[1] is True].count(True)
