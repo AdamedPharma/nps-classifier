@@ -252,7 +252,8 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                             return True
                             
                 if part_s_carbons <= 6:
-                    if Fragments.fr_sulfone(part_s) == 1:
+                    # if Fragments.fr_sulfone(part_s) == 1:
+                    if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("S=O"))) == 2:
                         desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
                         return True
                         
@@ -360,10 +361,17 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
             if Fragments.fr_halogen(s) == 1 and num_heavy_atoms == 1:
                 desc.append(f"Zawiera atom {Chem.MolToSmiles(s)}.")
                 return True
+                
             if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
                 desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
                 if second_num_s:
                             desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                return True
+
+            if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("S=O"))) == 2 and part_s_carbons <= 10:
+                desc.append(f"Zawiera grupę alkilosulfonylową; {part_s_carbons} atomów węgla.")
+                if second_num_s:
+                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
             if part_s.HasSubstructMatch(Chem.MolFromSmiles("O")):
@@ -380,17 +388,8 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
                         desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
 
-                else:
+                elif all(atom.GetAtomicNum() in [6, 8] for atom in tocheck.GetAtoms()):
                     desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla.")
-                    if second_num_s:
-                        desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
-                    return True
-
-            if part_s.HasSubstructMatch(Chem.MolFromSmiles("S")):
-                tocheck = until(part_s, "S", 1)
-                if Fragments.fr_sulfone(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in
-                                                           tocheck.GetAtoms()].count(True) <= 10:
-                    desc.append(f"Zawiera grupę alkilosulfonylową; {part_s_carbons} atomów węgla.")
                     if second_num_s:
                         desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
