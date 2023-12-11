@@ -314,8 +314,9 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
-            if Fragments.fr_Al_OH(part_s) == 1:
-                desc.append(f"Zawiera grupę hydroksylową; {part_s_carbons} atomów węgla.")
+            # if Fragments.fr_Al_OH(part_s) == 1:
+            if part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and part_s.GetNumHeavyAtoms() == 1:
+                desc.append(f"Zawiera grupę hydroksylową.")
                 if second_num_s:
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
