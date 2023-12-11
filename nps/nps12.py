@@ -323,8 +323,9 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 return True
 
             elif all(atom.GetAtomicNum() in permitted_atoms for atom in s.GetAtoms()):
-                desc.append(f"Druga część podstawnika zawiera {num_heavy_atoms} dozwolonych atomów.")
+                desc.append(f"Zawiera {num_heavy_atoms} dozwolonych atomów. Podstawnik do weryfikacji.")
                 return True
+                
             else:
                 desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów.")
                 return False
