@@ -354,6 +354,12 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
     part_s_carbons = [atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()].count(True)
 
     if num_heavy_atoms - is_in_ring <= 20:
+
+        if condense:
+            if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and 1 <= part_s_carbons <= 3:
+                desc.append(f"Zawiera pierścień skondensowany z układem cyklicznym struktury głównej; {part_s_carbons+3} atomów węgla.")
+                return True
+        
         if ring_part_s is not None:
 
             if all(atom.GetAtomicNum() == 6 for atom in ring_part_s.GetAtoms()) and part_s_carbons <= 10:
@@ -361,12 +367,7 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
                 desc.append(f"Zawiera pierścień, składający się z {ring_at} atomów.")
                 return True
         else:
-
-            if condense:
-                if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and 4 <= part_s_carbons <= 6:
-                    desc.append(f"Zawiera pierścień skondensowany ze strukturą główną; {part_s_carbons} atomów węgla.")
-                    return True
-
+            
             if Fragments.fr_halogen(s) == 1 and num_heavy_atoms == 1:
                 desc.append(f"Zawiera atom {Chem.MolToSmiles(s)}.")
                 return True
