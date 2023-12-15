@@ -422,6 +422,7 @@ def matching(res: list, to_m: list, substituents: list, s4condense: list) -> lis
         s = [i for i in s if i in substituents]  # filtering
         if len(r) == 6:  # if condense is True
             s = s4condense[0]
+            r_s.append([r, s])
         if len(s) == 2 and r[2] == "N":
             nitro_s = [[r, [s[0]]], [r, [s[1]]]]
         if len(s) == 1:
