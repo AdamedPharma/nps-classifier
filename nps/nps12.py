@@ -48,8 +48,8 @@ systems_map_I = {
     "O1C=CC=C1(CCN)": "furyl",
     "O1C=C(CCN)C=C1": "furyl",
     "C1CCCC1(CCN)": "cyklopentyl",
-    "C1CCCCC1(CCN)": "cykloheksyl",
-    "C1=CC=CC(CCN)=C1": "fenyl"
+    "C1=CC=CC(CCN)=C1": "fenyl",
+    "C1CCCCC1(CCN)": "cykloheksyl" 
 }
 systems_map_II = {
     "O1C(C(=O)CN)=CC2=CC3=C(C=CO3)C=C12": "benzodifuranyl",
@@ -95,8 +95,8 @@ systems_map_II = {
     "O1C=CC=C1(C(=O)CN)": "furyl",
     "O1C=C(C(=O)CN)C=C1": "furyl",
     "C1CCCC1(C(=O)CN)": "cyklopentyl",
-    "C1CCCCC1(C(=O)CN)": "cykloheksyl",
-    "C1=CC=CC(C(=O)CN)=C1": "fenyl"
+    "C1=CC=CC(C(=O)CN)=C1": "fenyl",
+    "C1CCCCC1(C(=O)CN)": "cykloheksyl"
 }
 
 
