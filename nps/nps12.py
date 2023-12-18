@@ -321,7 +321,7 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
-            if sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6:
+            if sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
                 desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla.")
                 if second_num_s:
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
