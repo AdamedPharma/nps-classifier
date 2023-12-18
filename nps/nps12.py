@@ -391,8 +391,7 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
                     return True
 
                 tocheck = until(part_s, "O", 1)
-                if Fragments.fr_C_O_noCOO(tocheck) == 1 and [atom.GetAtomicNum() == 6 for atom in
-                                                             tocheck.GetAtoms()].count(True) <= 10:
+                if [atom.GetAtomicNum() == 6 for atom in tocheck.GetAtoms()].count(True) <= 10 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
                     desc.append(f"Zawiera grupę alkiloksykarbonylową; {part_s_carbons} atomów węgla.")
                     if second_num_s:
                         desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
