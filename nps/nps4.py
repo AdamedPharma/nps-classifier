@@ -59,7 +59,9 @@ def classifier(smiles: str) -> tuple:
 
             else:
                 desc.append("Substancja zawiera niedozwolone atomy")
-
+                desc = " ".join(desc)
+                return False, desc, None
+                
         else:
             desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
             desc = " ".join(desc)
