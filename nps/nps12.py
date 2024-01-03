@@ -315,29 +315,45 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 return True
 
             # if Fragments.fr_Al_OH(part_s) == 1:
-            if part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and part_s.GetNumHeavyAtoms() == 1:
+            elif part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and part_s.GetNumHeavyAtoms() == 1:
                 desc.append(f"Zawiera grupę hydroksylową.")
                 if second_num_s:
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
-            if sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
+            elif sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
                 desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla.")
                 if second_num_s:
                     desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
 
                 return True
 
-            if Fragments.fr_NH2(part_s) == 1 or Fragments.fr_NH1(part_s) or Fragments.fr_NH0(part_s) == 1:
+            # if Fragments.fr_NH2(part_s) == 1 or Fragments.fr_NH1(part_s) or Fragments.fr_NH0(part_s) == 1:
+            elif s.HasSubstructMatch(Chem.MolFromSmiles("N")) and num_heavy_atoms == 1:
                 desc.append("Zawiera grupę aminową.")
                 return True
 
-            elif all(atom.GetAtomicNum() in permitted_atoms for atom in s.GetAtoms()):
-                desc.append(f"Zawiera {num_heavy_atoms} dozwolonych atomów. Podstawnik do weryfikacji.")
-                return True
+            elif part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
+                for p_at in [Chem.Atom(at).GetSymbol() for at in permitted_atoms[1:]]:
+                    if part_s.HasSubstructMatch(Chem.MolFromSmiles(p_at)):
+                        smi = Chem.MolToSmiles(until(part_s, p_at, -1))
+                        if "." not in smi:
+                            smi = Chem.MolFromSmiles(smi)
+                            desc.append(f"Zawiera łańcuch węglowy; 1 atom węgla; "
+                                        f"druga część podstawnika zawiera {smi.GetNumHeavyAtoms()} dozwolonych atomów, " 
+                                        f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            return True
+                            
+                        smi = [i for i in smi.split(".") if "C" in i][0] 
+                        smi = Chem.MolFromSmiles(smi)
+                        if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
+                            desc.append(f"Zawiera łańcuch węglowy; {smi.GetNumHeavyAtoms()} atomów węgla; "
+                                        f"druga część podstawnika zawiera {num_heavy_atoms - smi.GetNumHeavyAtoms()} dozwolonych atomów, " 
+                                        f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            return True
                 
             else:
-                desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów.")
+                desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów. Do weryfikacji.")
                 return False
     else:
         desc.append(
