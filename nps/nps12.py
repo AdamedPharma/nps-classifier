@@ -537,10 +537,6 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                 result.append(aliphatic_carbon)
 
                         i += 1
-                        if suspected == matches[-1] and any(not i for i in result):
-                            desc = "Podstawniki znalezionych struktur nie spełniaja warunków."
-                            return False, desc, suspected, mol2move
-
                         desc = " ".join(desc)
                         if not all(i for i in result) and i < len(matches):
                             desc = []
