@@ -152,7 +152,9 @@ def get_central_atoms(mol: Chem.rdchem.Mol, suspected: tuple, desc: list) -> Uni
                         if any(set(lst).issubset(set(list(suspected))) for lst in
                                [list(idxs) for idxs in atom_rings if s_idx in idxs]) and atom.GetSymbol() == "C":
                             if all([n.IsInRing() for n in atom.GetNeighbors()]):
-                                pass  # system condensed with main system
+                                add.append(False) # False for R being condensed with main system
+                                res.append(add)
+                                break
 
             # aliphatic carbon
             if add[2] == "C" and add[3] is False:
@@ -518,13 +520,16 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                 result.append(aliphatic_nitrogen)
 
                             if r[2] == "C" and r[4] is True:
-                                desc.append(f"Podstawnik R:")
-                                ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
-                                result.append(ring_carbon)
+                                if len(r) == 6 and r is False: # condensed with main system
+                                    result.append(False)
+                                else:
+                                    desc.append(f"Podstawnik R:")
+                                    ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
+                                    result.append(ring_carbon)  
 
                             if r[2] == "C" and r[4] is False:
                                 condense = False
-                                if len(r) == 6:  # if condense is True
+                                if len(r) == 6 and r is True:  # if condense is True
                                     condense = True
                                 desc.append(f"Podstawnik R3-6:")
                                 aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms,
