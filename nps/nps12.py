@@ -520,7 +520,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                 result.append(aliphatic_nitrogen)
 
                             if r[2] == "C" and r[4] is True:
-                                if len(r) == 6 and r is False: # condensed with main system
+                                if len(r) == 6 and r[5] is False: # condensed with main system
                                     result.append(False)
                                 else:
                                     desc.append(f"Podstawnik R:")
@@ -529,7 +529,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                             if r[2] == "C" and r[4] is False:
                                 condense = False
-                                if len(r) == 6 and r is True:  # if condense is True
+                                if len(r) == 6 and r[5] is True:  # if condense is True
                                     condense = True
                                 desc.append(f"Podstawnik R3-6:")
                                 aliphatic_carbon = r3456(s, part_s, ring_part_s, condense, is_in_ring, num_heavy_atoms,
@@ -537,10 +537,15 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                 result.append(aliphatic_carbon)
 
                         i += 1
+                        if suspected == matches[-1] and any(not i for i in result):
+                            desc = "Podstawniki znalezionych struktur nie spełniaja warunków."
+                            return False, desc, suspected, mol2move
+
                         desc = " ".join(desc)
                         if not all(i for i in result) and i < len(matches):
                             desc = []
                             continue
+
                         else:
                             return all(i for i in result), desc, suspected, mol2move
 
