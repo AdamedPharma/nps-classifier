@@ -244,8 +244,9 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                     desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
                     return True
 
-                if part_s.GetSubstructMatches(Chem.MolFromSmiles("COC")) and part_s_carbons <= 6:
+                if part_s.GetSubstructMatches(Chem.MolFromSmiles("OC")) and part_s_carbons <= 6 and num_heavy_atoms >= 2:
                     desc.append(f"Zawiera grupę alkoksylową; {part_s_carbons} atomów węgla.")
+                    return True
 
                 elif part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
                     for p_at in [Chem.Atom(at).GetSymbol() for at in permitted_atoms[1:]]:
