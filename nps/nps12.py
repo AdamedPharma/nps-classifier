@@ -365,7 +365,7 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
 
         if condense:
             if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and 1 <= part_s_carbons <= 3:
-                desc.append(f"Zawiera pierścień skondensowany z układem cyklicznym struktury głównej; {part_s_carbons+3} atomów węgla.")
+                desc.append(f"Zawiera pierścień skondensowany z układem cyklicznym struktury głównej.")
                 return True
         
         if ring_part_s is not None:
