@@ -213,6 +213,7 @@ def until(s, stop_a, in_add):
 def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
        carbons: int, permitted_atoms: list, desc: list) -> bool:
 
+    second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
     part_s_carbons = [atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()].count(True)
@@ -242,10 +243,17 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
 
                 if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("S=O"))) == 2 and part_s_carbons <= 6:
                     desc.append(f"Zawiera grupę alkilosulfonową; {part_s_carbons} atomów węgla.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
 
-                if part_s.GetSubstructMatches(Chem.MolFromSmiles("OC")) and part_s_carbons <= 6 and num_heavy_atoms >= 2:
+                if part_s.GetSubstructMatches(
+                        Chem.MolFromSmiles("OC")) and part_s_carbons <= 6 and num_heavy_atoms >= 2:
                     desc.append(f"Zawiera grupę alkoksylową; {part_s_carbons} atomów węgla.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
 
                 elif part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
@@ -286,7 +294,7 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
 
 def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mol, is_in_ring: int,
         num_heavy_atoms: int, permitted_atoms: list, desc: list) -> bool:
-            
+
     second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
@@ -294,33 +302,29 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
 
     if num_heavy_atoms - is_in_ring <= 16:
         if ring_part_s is not None:
-            if all(atom.GetAtomicNum() in [6, 8, 16, 7] for atom in
-                   ring_part_s.GetAtoms()) and 5 <= ring_part_s.GetNumHeavyAtoms() <= 7:
-                ring_at = ring_part_s.GetNumHeavyAtoms()
+            ring_at = ring_part_s.GetNumHeavyAtoms()
+            if all(atom.GetAtomicNum() in [6, 8, 16, 7] for atom in ring_part_s.GetAtoms()) and 5 <= ring_at <= 7:
                 desc.append(f"Zawiera pierścień, składający się z {ring_at} atomów.")
                 return True
         else:
             if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
                 desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
                 if second_num_s:
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                    desc.append(
+                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
-            # if Fragments.fr_Al_OH(part_s) == 1:
             elif part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and part_s.GetNumHeavyAtoms() == 1:
-                desc.append(f"Zawiera grupę hydroksylową.")
-                if second_num_s:
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                desc.append(f"Zawiera grupę hydroksylową. Możliwa niedozwolona grupa karbonylowa. Do weryfikajci.")
                 return True
 
-            elif sum(1 for atom in part_s.GetAtoms() if atom.GetAtomicNum() == 8) == 1 and part_s_carbons <= 6 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
+            elif part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")) and part_s_carbons <= 6:
                 desc.append(f"Zawiera grupę alkilokarbonylową; {part_s_carbons} atomów węgla.")
                 if second_num_s:
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
-
+                    desc.append(
+                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                 return True
 
-            # if Fragments.fr_NH2(part_s) == 1 or Fragments.fr_NH1(part_s) or Fragments.fr_NH0(part_s) == 1:
             elif s.HasSubstructMatch(Chem.MolFromSmiles("N")) and num_heavy_atoms == 1:
                 desc.append("Zawiera grupę aminową.")
                 return True
@@ -329,21 +333,32 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 for p_at in [Chem.Atom(at).GetSymbol() for at in permitted_atoms[1:]]:
                     if part_s.HasSubstructMatch(Chem.MolFromSmiles(p_at)):
                         smi = Chem.MolToSmiles(until(part_s, p_at, -1))
+
                         if "." not in smi:
                             smi = Chem.MolFromSmiles(smi)
                             desc.append(f"Zawiera łańcuch węglowy; 1 atom węgla; "
-                                        f"druga część podstawnika zawiera {smi.GetNumHeavyAtoms()} dozwolonych atomów, " 
+                                        f"druga część podstawnika zawiera {smi.GetNumHeavyAtoms()} dozwolonych atomów, "
                                         f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
-                            
-                        smi = [i for i in smi.split(".") if "C" in i][0] 
+
+                        smi = [i for i in smi.split(".") if "C" in i][0]
+                        smi_l = len(smi) + 1
                         smi = Chem.MolFromSmiles(smi)
+                        smi_ring = [at.IsInRing() for at in smi.GetAtoms()].count(True)
+
                         if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
-                            desc.append(f"Zawiera łańcuch węglowy; {smi.GetNumHeavyAtoms()} atomów węgla; "
-                                        f"druga część podstawnika zawiera {num_heavy_atoms - smi.GetNumHeavyAtoms()} dozwolonych atomów, " 
-                                        f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                            desc.append(f"Zawiera łańcuch węglowy; {smi_l} atomów węgla; "
+                                        f"druga część podstawnika zawiera {num_heavy_atoms - smi_l} dozwolonych atomów, "
+                                        f"w tym {smi_ring} atomów w pierścieniu.")
                             return True
-                
+
+            elif s.HasSubstructMatch(Chem.MolFromSmiles("C1=CC=CC=C1C")):
+                desc.append("Grupa benzylowa.")
+                if second_num_s:
+                    desc.append(
+                        f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                return True
+
             else:
                 desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów. Do weryfikacji.")
                 return False
@@ -351,72 +366,108 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
         desc.append(
             f"Zawiera niedopuszczalną liczbę atomów, które nie są częścią pierścienia: {num_heavy_atoms - is_in_ring}.")
         return False  # to many atoms
-
+        
 
 def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mol, condense: bool, is_in_ring: int,
           num_heavy_atoms: int, permitted_atoms: list, desc: list) -> bool:
-              
+
     second_num_s = s.GetNumHeavyAtoms() - part_s.GetNumHeavyAtoms()
     s_ring_atoms = [atom.IsInRing() for atom in s.GetAtoms()].count(True)
     s_part_ring_atoms = [atom.IsInRing() for atom in part_s.GetAtoms()].count(True)
     part_s_carbons = [atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()].count(True)
 
     if num_heavy_atoms - is_in_ring <= 20:
+        if all(atom.GetAtomicNum() in permitted_atoms for atom in s.GetAtoms()):
+            if condense:
+                if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and 1 <= part_s_carbons <= 3:
+                    desc.append(f"Zawiera układ cykliczny skondensowany ze strukturą główną.")
+                    return True
 
-        if condense:
-            if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and 1 <= part_s_carbons <= 3:
-                desc.append(f"Zawiera pierścień skondensowany z układem cyklicznym struktury głównej.")
-                return True
-        
-        if ring_part_s is not None:
+            if ring_part_s is not None:
+                if all(atom.GetAtomicNum() == 6 for atom in ring_part_s.GetAtoms()) and part_s_carbons <= 10:
+                    ring_at = ring_part_s.GetNumHeavyAtoms()
+                    if 3 <= ring_at <= 7:
+                        desc.append(f"Zawiera pierścień, składający się z {ring_at} atomów.")
+                    return True
+            else:
+                if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 10:
+                    desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                    return True
 
-            if all(atom.GetAtomicNum() == 6 for atom in ring_part_s.GetAtoms()) and part_s_carbons <= 10:
-                ring_at = ring_part_s.GetNumHeavyAtoms()
-                desc.append(f"Zawiera pierścień, składający się z {ring_at} atomów.")
-                return True
-        else:
-            
-            if Fragments.fr_halogen(s) == 1 and num_heavy_atoms == 1:
-                desc.append(f"Zawiera atom {Chem.MolToSmiles(s)}.")
-                return True
-                
-            if all(atom.GetAtomicNum() == 6 for atom in part_s.GetAtoms()) and part_s_carbons <= 6:
-                desc.append(f"Zawiera łańcuch węglowy; {part_s_carbons} atomów węgla.")
-                if second_num_s:
-                            desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
-                return True
+                elif Fragments.fr_halogen(s) == 1 and num_heavy_atoms == 1:
+                    desc.append(f"Zawiera atom {Chem.MolToSmiles(s)}.")
+                    return True
 
-            if len(part_s.GetSubstructMatches(Chem.MolFromSmiles("S=O"))) == 2 and part_s_carbons <= 10:
-                desc.append(f"Zawiera grupę alkilosulfonylową; {part_s_carbons} atomów węgla.")
-                if second_num_s:
-                    desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
-                return True
-
-            if part_s.HasSubstructMatch(Chem.MolFromSmiles("O")):
-                tocheck = until(part_s, "O", 0)
-                if num_heavy_atoms == 1:
+                elif len(part_s.GetSubstructMatches(Chem.MolFromSmiles("S=O"))) == 2 and part_s_carbons <= 10:
+                    desc.append(f"Zawiera grupę alkilosulfonylową; {part_s_carbons} atomów węgla.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                    return True
+                elif part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and num_heavy_atoms == 1:
                     desc.append(f"Zawiera grupę hydroksylową. Możliwa niedozwolona grupa karbonylowa. Do weryfikajci.")
                     return True
 
-                tocheck = until(part_s, "O", 1)
-                if [atom.GetAtomicNum() == 6 for atom in tocheck.GetAtoms()].count(True) <= 10 and part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")):
+                elif part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")) and part_s.HasSubstructMatch(Chem.MolFromSmiles("CO")):
                     desc.append(f"Zawiera grupę alkiloksykarbonylową; {part_s_carbons} atomów węgla.")
                     if second_num_s:
-                        desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
 
-                elif all(atom.GetAtomicNum() in [6, 8] for atom in tocheck.GetAtoms()):
-                    desc.append(f"Zawiera grupę alkoksylowa; {part_s_carbons} atomów węgla.")
+                elif part_s.GetSubstructMatches(Chem.MolFromSmiles("OC")) and part_s_carbons <= 6 and num_heavy_atoms >= 2:
+                    desc.append(f"Zawiera grupę alkoksylową; {part_s_carbons} atomów węgla.")
                     if second_num_s:
-                        desc.append(f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                     return True
 
-            elif all(atom.GetAtomicNum() in permitted_atoms for atom in s.GetAtoms()):
-                desc.append(f"Zawiera {num_heavy_atoms} dozwolonych atomów. Do weryfikacji")
-                return True
-            else:
-                desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów.")
-                return False
+                elif part_s.GetAtomWithIdx(0).GetAtomicNum() == 6:
+                    for p_at in [Chem.Atom(at).GetSymbol() for at in permitted_atoms[1:]]:
+                        if part_s.HasSubstructMatch(Chem.MolFromSmiles(p_at)):
+                            smi = Chem.MolToSmiles(until(part_s, p_at, -1))
+
+                            if "." not in smi:
+                                smi = Chem.MolFromSmiles(smi)
+                                desc.append(f"Zawiera łańcuch węglowy; 1 atom węgla; "
+                                            f"druga część podstawnika zawiera {smi.GetNumHeavyAtoms()} dozwolonych atomów, "
+                                            f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                                return True
+
+                            smi = [i for i in smi.split(".") if "C" in i][0]
+                            smi_l = len(smi) + 1
+                            smi = Chem.MolFromSmiles(smi)
+                            smi_ring = [at.IsInRing() for at in smi.GetAtoms()].count(True)
+
+                            if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
+                                desc.append(f"Zawiera łańcuch węglowy; {smi_l} atomów węgla; "
+                                            f"druga część podstawnika zawiera {num_heavy_atoms - smi_l} dozwolonych atomów, "
+                                            f"w tym {smi_ring} atomów w pierścieniu.")
+                                return True
+
+                elif s.HasSubstructMatch(Chem.MolFromSmiles("C1=CC=CC=C1C")):
+                    desc.append("Grupa benzylowa.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                    return True
+
+                elif s.HasSubstructMatch(Chem.MolFromSmiles("C1=CC=CC=C1")):
+                    desc.append("Grupa fenylowa.")
+                    if second_num_s:
+                        desc.append(
+                            f"Druga część podstawnika zawiera {second_num_s} atomów, w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
+                    return True
+
+                else:
+                    desc.append("Nie spełnia warunków. Zawiera niedozwolony atom lub grupę atomów.")
+                    return False
+        else:
+            desc.append("Nie spełnia warunków. Zawiera niedozwolony atom.")
+            return False
     else:
         desc.append(
             f"Zawiera niedopuszczalną liczbę atomów, które nie są częścią pierścienia: {num_heavy_atoms - is_in_ring}.")
@@ -476,14 +527,6 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                             substituents4condense.append(substituent)
                             mol2substituents = Chem.RWMol(mol)
-
-                        # s4condense = list(
-                        #     (Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
-
-                        # for r, s in zip(res, to_m):
-                        #     s = [i for i in s if i in substituents]  # filtering
-                        #     if len(r) == 6:  # if condense is True
-                        #         s = s4condense[0]
                         
                         result = []
                         s4condense = ["CC"]
@@ -492,7 +535,6 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                             r = r_s[0]
                             s = r_s[1][0]
 
-                            # s = s[0]
                             s = Chem.MolFromSmiles(s)
                             permitted_atoms = [6, 8, 7, 9, 17, 35, 53, 16]
                             non_ring_s, is_in_ring = if_in_ring(s, False)  # list of [bool, atom_idx]
@@ -570,4 +612,4 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 # if classifier(smiles, systems_map_I):
 #     res, desc, suspected, mol2move = classifier(smiles, systems_map_I)
 # else:
-    desc = "Podstawniki znalezionych struktor nie spełniają warunków."
+#     desc = "Do weryfikacji."
