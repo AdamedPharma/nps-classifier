@@ -476,14 +476,16 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                             substituents4condense.append(substituent)
                             mol2substituents = Chem.RWMol(mol)
 
-                        s4condense = list(
-                            (Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
-                        result = []
+                        # s4condense = list(
+                        #     (Counter(substituents) - Counter(substituents4condense)).elements())  # overwrite
 
                         # for r, s in zip(res, to_m):
                         #     s = [i for i in s if i in substituents]  # filtering
                         #     if len(r) == 6:  # if condense is True
                         #         s = s4condense[0]
+                        
+                        result = []
+                        s4condense = ["CC"]
 
                         for r_s in matching(res, to_m, substituents, s4condense):
                             r = r_s[0]
@@ -521,7 +523,8 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                             if r[2] == "C" and r[4] is True:
                                 if len(r) == 6 and r[5] is False: # condensed with main system
-                                    result.append(False)
+                                    # result.append(False)
+                                    pass
                                 else:
                                     desc.append(f"Podstawnik R:")
                                     ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
@@ -559,4 +562,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
         return False, "Do weryfikacji", None, mol2move
 
 
-# res, desc, suspected, mol2move = classifier(smiles, systems_map_I)
+# if classifier(smiles, systems_map_I):
+#     res, desc, suspected, mol2move = classifier(smiles, systems_map_I)
+# else:
+    desc = "Podstawniki znalezionych struktor nie spełniają warunków."
