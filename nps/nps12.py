@@ -1,7 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem import Fragments
 from rdkit.Chem import Descriptors
-from collections import Counter
 from typing import Union
 
 systems_map_I = {
