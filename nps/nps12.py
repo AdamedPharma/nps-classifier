@@ -565,9 +565,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
                             if r[2] == "C" and r[4] is True:
                                 if len(r) == 6 and r[5] is False: # condensed with main system
-                                    # result.append(False)
                                     result.append("forbidden")  
-                                    # pass
                                 else:
                                     desc.append(f"Podstawnik R:")
                                     ring_carbon = rs(s, part_s, num_heavy_atoms, carbons, permitted_atoms, desc)
