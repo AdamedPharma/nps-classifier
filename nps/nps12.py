@@ -580,7 +580,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
                                                          permitted_atoms, desc)
                                 result.append(aliphatic_carbon)
                                 
-                        if result.count("forbidden") == 2:
+                        if result.count("forbidden") >= 2:
                             result.append(False)
                             
                         i += 1
