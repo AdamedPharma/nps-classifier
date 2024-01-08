@@ -275,7 +275,7 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                             if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
                                 desc.append(f"Zawiera łańcuch węglowy; {smi_l} atomów węgla; "
                                             f"druga część podstawnika zawiera {num_heavy_atoms - smi_l} dozwolonych atomów, "
-                                            f"w tym {smi_ring} atomów w pierścieniu.")
+                                            f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                                 return True
 
                 else:
@@ -348,7 +348,7 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                         if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
                             desc.append(f"Zawiera łańcuch węglowy; {smi_l} atomów węgla; "
                                         f"druga część podstawnika zawiera {num_heavy_atoms - smi_l} dozwolonych atomów, "
-                                        f"w tym {smi_ring} atomów w pierścieniu.")
+                                        f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                             return True
 
             elif s.HasSubstructMatch(Chem.MolFromSmiles("C1=CC=CC=C1C")):
@@ -444,7 +444,7 @@ def r3456(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.
                             if all(atom.GetAtomicNum() == 6 for atom in smi.GetAtoms()) and smi.GetNumHeavyAtoms() <= 6:
                                 desc.append(f"Zawiera łańcuch węglowy; {smi_l} atomów węgla; "
                                             f"druga część podstawnika zawiera {num_heavy_atoms - smi_l} dozwolonych atomów, "
-                                            f"w tym {smi_ring} atomów w pierścieniu.")
+                                            f"w tym {s_ring_atoms - s_part_ring_atoms} atomów w pierścieniu.")
                                 return True
 
                 elif s.HasSubstructMatch(Chem.MolFromSmiles("C1=CC=CC=C1C")):
