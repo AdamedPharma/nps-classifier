@@ -1,6 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 from rdkit.Chem import Fragments
+from typing import Union
 
 
 systems_map_V = {
@@ -55,7 +56,7 @@ systems_map_V = {
     
 }
 
-def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol): #-> Union[bool, Chem.rdchem.Mol, tuple]:
+def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> Union[bool, Chem.rdchem.Mol, tuple]:
     substructure = None
     for system, name in systems_map.items():
         if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
