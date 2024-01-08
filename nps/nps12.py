@@ -236,7 +236,7 @@ def rs(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, num_heavy_atoms: int,
                     desc.append(f"Zawiera grupę nitrową.")
                     return True
 
-                if Fragments.fr_COO2(part_s) == 1:
+                if Fragments.fr_COO2(part_s) == 1 and num_heavy_atoms == 3:
                     desc.append(f"Zawiera grupę karboksylową.")
                     return True
 
