@@ -314,7 +314,7 @@ def r12(s: Chem.rdchem.Mol, part_s: Chem.rdchem.Mol, ring_part_s: Chem.rdchem.Mo
                 return True
 
             elif part_s.HasSubstructMatch(Chem.MolFromSmiles("O")) and part_s.GetNumHeavyAtoms() == 1:
-                desc.append(f"Zawiera grupę hydroksylową. Możliwa niedozwolona grupa karbonylowa. Do weryfikajci.")
+                desc.append(f"Zawiera grupę hydroksylową. Możliwa niedozwolona grupa karbonylowa. Do weryfikacji.")
                 return True
 
             elif part_s.HasSubstructMatch(Chem.MolFromSmiles("C=O")) and part_s_carbons <= 6:
