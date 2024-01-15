@@ -21,25 +21,25 @@ def main(smiles: str):
     
     _, _, suspected_I, mol = nps12.classifier(smiles, systems_map_I)
     _, _, suspected_II, mol = nps12.classifier(smiles, systems_map_II)
-    _, _, suspected_III, mol = nps3.classifier(smiles, systems_map_III)
-    _, _, suspected_IV, mol = nps4.classifier(smiles, systems_map_IV)
-    _, _, suspected_V, mol = nps5.classifier(smiles, systems_map_V)
-    _, _, suspected_VI, mol = nps6.classifier(smiles, systems_map_VI)
+    # _, _, suspected_III, mol = nps3.classifier(smiles, systems_map_III)
+    # _, _, suspected_IV, mol = nps4.classifier(smiles, systems_map_IV)
+    # _, _, suspected_V, mol = nps5.classifier(smiles, systems_map_V)
+    # _, _, suspected_VI, mol = nps6.classifier(smiles, systems_map_VI)
     
     suspected = ()
     
-    if suspected_VI:
-        suspected = suspected_VI
-    elif suspected_V:
-        suspected = suspected_V
-    elif suspected_IV:
-        suspected = suspected_IV
-    elif suspected_II:
-        suspected = suspected_II
-    elif suspected_I:
+    # if suspected_VI:
+    #     suspected = suspected_VI
+    # elif suspected_V:
+    #     suspected = suspected_V
+    # elif suspected_IV:
+    #     suspected = suspected_IV
+    # elif suspected_II:
+        # suspected = suspected_II
+    if suspected_I:
         suspected = suspected_I
-    else suspected_III:
-        suspected = suspected_III
+    else suspected_II:
+        suspected = suspected_II
 
     img = Draw.MolsToGridImage([mol], molsPerRow=1,
                                highlightAtomLists=[list(suspected)], subImgSize=(1200, 1200))
