@@ -38,7 +38,7 @@ def main(smiles: str):
         # suspected = suspected_II
     if suspected_I:
         suspected = suspected_I
-    else suspected_II:
+    elif suspected_II:
         suspected = suspected_II
 
     img = Draw.MolsToGridImage([mol], molsPerRow=1,
