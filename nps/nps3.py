@@ -7,7 +7,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-systems_map_V = {
+systems_map_III = {
     "c1cc2c(cc1)ncc2": "indol-1,3-diyl",  # a
     "c1cc2c(cc1)n(nc2)": "indazol-1,3-diyl",  # b  # [nH0] - cannot have s
     "c3cc4ncnc4cc3": "benzimidazol-1,2-diyl izomer I",  # c
@@ -129,8 +129,8 @@ def classifier(smiles: str, systems_map: dict):
     desc = []
     mol2move = mol
 
-    if find_smarts_substructure(systems_map_V, mol) is not False:
-        substructure, matches, name = find_smarts_substructure(systems_map_V, mol)
+    if find_smarts_substructure(systems_map_III, mol) is not False:
+        substructure, matches, name = find_smarts_substructure(systems_map_III, mol)
         desc.append(f"Układ cykliczny grupy podstawowej: {name}.")
         mw = round(Descriptors.ExactMolWt(mol), 2)
         desc.append(f"Masa cząsteczkowa: {mw}.")
@@ -222,5 +222,5 @@ def classifier(smiles: str, systems_map: dict):
 #        "CCCCCN1C2=CC=CC=C2C(=N1)C(=O)NC34CC5CC(C3)CC(C5)C4", "Cc1cc2c(c(C)c1C)n(CCC)nc2C(=O)c3cc4ccccc4cc3"]
 
 # smiles = "C1=CC=C2C(=C1)C(=CN2CCCCCF)C(=O)OC3=CC=CC4=C3N=CC=C4"
-# res, desc, suspected, mol2move = classifier(smiles, systems_map_V)
+# res, desc, suspected, mol2move = classifier(smiles, systems_map_III)
 # print(res, desc, suspected, mol2move)
