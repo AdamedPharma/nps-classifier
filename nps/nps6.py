@@ -2,7 +2,7 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors
 from nps4 import find_smarts_substructure
 
-systems_map = {
+systems_map_VI = {
     # "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
     "[H][C@@]2(C(N1C(C)CC(C)1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_II",
     "[H][C@@]2(C(N1C(C)C(C)C1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_I",
@@ -38,8 +38,8 @@ def classifier(smiles: str) -> tuple:
         mw = round(Descriptors.ExactMolWt(mol), 2)
         if mw <= 500:    
             desc.append(f"Masa molowa: {mw}.")
-            if find_smarts_substructure(systems_map, mol) is not False:
-                    substructure, matches, name = find_smarts_substructure(systems_map, mol)
+            if find_smarts_substructure(systems_map_VI, mol) is not False:
+                    substructure, matches, name = find_smarts_substructure(systems_map_VI, mol)
                     suspected = list(matches[0])
                     if "structure_II" in name:
                         desc.append(f"Znaleziono strukturę II.")
