@@ -36,6 +36,7 @@ def classifier(smiles: str) -> tuple:
         mol = Chem.MolFromSmiles(smiles)
         desc = []
         permitted_at = []
+        mol2move = mol
         mw = round(Descriptors.ExactMolWt(mol), 2)
         if mw <= 500:    
             desc.append(f"Masa molowa: {mw}.")
