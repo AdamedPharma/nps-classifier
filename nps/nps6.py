@@ -16,7 +16,7 @@ systems_map_VI = {
 }
 
 
-def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple: 
+def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> Union[bool, Chem.rdchem.Mol, tuple]:
     substructure = None
     for system, name in systems_map.items():
         if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
