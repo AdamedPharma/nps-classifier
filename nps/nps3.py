@@ -124,95 +124,100 @@ def linker_limit(s: list, desc: list):
 
 
 def classifier(smiles: str, systems_map: dict):
-    smiles = max(smiles.split("."), key=len)  # remove the radicals
-    mol = Chem.MolFromSmiles(smiles)
-    desc = []
-    mol2move = mol
 
-    if find_smarts_substructure(systems_map_III, mol) is not False:
-        substructure, matches, name = find_smarts_substructure(systems_map_III, mol)
-        desc.append(f"Układ cykliczny grupy podstawowej: {name}.")
-        mw = round(Descriptors.ExactMolWt(mol), 2)
-        desc.append(f"Masa cząsteczkowa: {mw}.")
+    try:
+        smiles = max(smiles.split("."), key=len)  # remove the radicals
+        mol = Chem.MolFromSmiles(smiles)
+        desc = []
+        mol2move = mol
 
-        suspected = matches[0]
+        if find_smarts_substructure(systems_map_V, mol) is not False:
+            substructure, matches, name = find_smarts_substructure(systems_map_V, mol)
+            desc.append(f"Układ cykliczny grupy podstawowej: {name}.")
+            mw = round(Descriptors.ExactMolWt(mol), 2)
+            desc.append(f"Masa cząsteczkowa: {mw}.")
 
-        ring_info_mol_reconvert = mol.GetRingInfo()
-        atom_rings = ring_info_mol_reconvert.AtomRings()  # number of rings in mol
+            suspected = matches[0]
 
-        nitro_sc, carbon_l, nitro_l, carbon_sc = side_chain_linker(mol, atom_rings, suspected)
-        idxs = []
-        res = []
-        if nitro_sc:
-            idxs.append([idx[2] for idx in nitro_sc][0])
-            res.append(nitro_sc[0])
-        if carbon_l:
-            idxs.append([idx[2] for idx in carbon_l][0])
-            res.append(carbon_l[0])
-        if nitro_l:
-            idxs.append([idx[2] for idx in nitro_l][0])
-            res.append(nitro_l[0])
-        if carbon_sc:
-            idxs.append([idx[2] for idx in carbon_sc][0])
-            res.append(carbon_sc[0])
+            ring_info_mol_reconvert = mol.GetRingInfo()
+            atom_rings = ring_info_mol_reconvert.AtomRings()  # number of rings in mol
 
-        mol2edit = Chem.RWMol(mol)
-        for atom in reversed(sorted(suspected)):
-            mol2edit.RemoveAtom(atom)
-        substituents = Chem.MolToSmiles(mol2edit, canonical=True).split(".")
+            nitro_sc, carbon_l, nitro_l, carbon_sc = side_chain_linker(mol, atom_rings, suspected)
+            idxs = []
+            res = []
+            if nitro_sc:
+                idxs.append([idx[2] for idx in nitro_sc][0])
+                res.append(nitro_sc[0])
+            if carbon_l:
+                idxs.append([idx[2] for idx in carbon_l][0])
+                res.append(carbon_l[0])
+            if nitro_l:
+                idxs.append([idx[2] for idx in nitro_l][0])
+                res.append(nitro_l[0])
+            if carbon_sc:
+                idxs.append([idx[2] for idx in carbon_sc][0])
+                res.append(carbon_sc[0])
 
-        to_m = []
-        mol2substituents = Chem.RWMol(mol)
-        for id in idxs:
-            mol2substituents.RemoveAtom(id)
-            substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[0]
-            # # move list to the next step instead of element
-            to_m.append(Chem.MolToSmiles(mol2substituents, canonical=True).split("."))
+            mol2edit = Chem.RWMol(mol)
+            for atom in reversed(sorted(suspected)):
+                mol2edit.RemoveAtom(atom)
+            substituents = Chem.MolToSmiles(mol2edit, canonical=True).split(".")
 
-        result = []
-        for r, s in zip(res, to_m):
-            if r[0] == "N" and r[3] == "side":
-                s = [i for i in s if i in substituents]
-                desc.append("Łańcuch boczny:")
-                scl = side_chain_limit(s, desc)
-                result.append(scl)
+            to_m = []
+            mol2substituents = Chem.RWMol(mol)
+            for id in idxs:
+                mol2substituents.RemoveAtom(id)
+                substituent = Chem.MolToSmiles(mol2substituents, canonical=True).split(".")[0]
+                # # move list to the next step instead of element
+                to_m.append(Chem.MolToSmiles(mol2substituents, canonical=True).split("."))
 
-            elif r[0] == "C" and r[3] == "linker":
-                desc.append("Łącznik oraz grupa przyłączona:")
-                ll = linker_limit(s, desc)
-                if ll is not None:
-                    result.append(ll)
-                else:
-                    desc.append("Brak łącznika. Do weryfikacji")
-                    desc = " ".join(desc)
-                    return True, desc, None, mol2move
+            result = []
+            for r, s in zip(res, to_m):
+                if r[0] == "N" and r[3] == "side":
+                    s = [i for i in s if i in substituents]
+                    desc.append("Łańcuch boczny:")
+                    scl = side_chain_limit(s, desc)
+                    result.append(scl)
 
-            elif r[0] == "N" and r[3] == "linker":
-                desc.append("Łącznik oraz grupa przyłączona:")
-                ll = linker_limit(s, desc)
-                if ll is not None:
-                    result.append(ll)
-                else:
-                    desc.append("Brak łącznika. Do weryfikacji")
-                    desc = " ".join(desc)
-                    return True, desc, None, mol2move
+                elif r[0] == "C" and r[3] == "linker":
+                    desc.append("Łącznik oraz grupa przyłączona:")
+                    ll = linker_limit(s, desc)
+                    if ll is not None:
+                        result.append(ll)
+                    else:
+                        desc.append("Brak łącznika. Do weryfikacji")
+                        desc = " ".join(desc)
+                        return True, desc, None, mol2move
 
-            if r[0] == "C" and r[3] == "side":
-                s = [i for i in s if i in substituents]
-                desc.append("Łańcuch boczny:")
-                scl = side_chain_limit(s, desc)
-                result.append(scl)
+                elif r[0] == "N" and r[3] == "linker":
+                    desc.append("Łącznik oraz grupa przyłączona:")
+                    ll = linker_limit(s, desc)
+                    if ll is not None:
+                        result.append(ll)
+                    else:
+                        desc.append("Brak łącznika. Do weryfikacji")
+                        desc = " ".join(desc)
+                        return True, desc, None, mol2move
 
-        desc.append("Zweryfikuj masę cząsteczkową grupy przyłączonej.")
-        # linker can be only one, so remove duplicate
-        desc = " ".join(desc)
-        # if all(i for i in result)
-        return all(i for i in result), desc, suspected, mol2move
+                if r[0] == "C" and r[3] == "side":
+                    s = [i for i in s if i in substituents]
+                    desc.append("Łańcuch boczny:")
+                    scl = side_chain_limit(s, desc)
+                    result.append(scl)
 
-    else:
-        desc.append("Struktura główna nie została znaleziona.")
-        desc = " ".join(desc)
-        return False, desc, None, mol2move 
+            desc.append("Zweryfikuj masę cząsteczkową grupy przyłączonej.")
+            # linker can be only one, so remove duplicate
+            desc = " ".join(desc)
+            # if all(i for i in result)
+            return all(i for i in result), desc, suspected, mol2move
+
+        else:
+            desc.append("Struktura główna nie została znaleziona.")
+            desc = " ".join(desc)
+            return False, desc, None, mol2move
+
+    except Exception:
+        return False, "Do weryfikacji", None
 
 
 # cns = ["CCCCCN1C=C(C2=CC=CC=C21)C(=O)C3=CC=CC4=CC=CC=C43", "CC(C)[C@@H](C(=O)OC)NC(=O)C1=CN(C2=CC=CC=C21)CCCCCF", "CCCCCN1C=C(C2=CC=CC=C21)C(=O)C3=CC=C(C=C3)OC", "C1=CC=C2C(=C1)C(=CN2CCCCCF)C(=O)OC3=CC=CC4=C3N=CC=C4 ",
