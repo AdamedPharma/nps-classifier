@@ -30,7 +30,7 @@ def main(smiles: str):
     #     predict = "NPS_II"
     if res_I:
         predict = "NPS_I"
-    elif res_III:
+    elif res_II:
         predict = "NPS_III"
     else:
         predict = "nie podlega"
