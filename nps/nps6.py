@@ -29,7 +29,7 @@ def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> Union[b
         return False
         
 
-def classifier(smiles: str) -> tuple:
+def classifier(smiles: str, systems_map_VI: dict) -> tuple:
     
     try:
         smiles = max(smiles.split("."), key=len)  # remove the radicals
