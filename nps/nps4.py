@@ -23,8 +23,8 @@ def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> Union[b
 
 
 def classifier(smiles: str, systems_map_IV: dict) -> tuple:
+    
     try:
-
         smiles = max(smiles.split("."), key=len)  # remove the radicals
         mol = Chem.MolFromSmiles(smiles)
         mw = round(Descriptors.ExactMolWt(mol), 2)
