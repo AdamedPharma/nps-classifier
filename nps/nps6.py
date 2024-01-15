@@ -1,6 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem import Descriptors
-from nps4 import find_smarts_substructure
+
 
 systems_map_VI = {
     # "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
