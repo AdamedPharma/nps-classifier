@@ -3,7 +3,7 @@ from rdkit.Chem import Descriptors
 from nps4 import find_smarts_substructure
 
 systems_map = {
-    "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
+    # "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
     "[H][C@@]2(C(N1C(C)CC(C)1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_II",
     "[H][C@@]2(C(N1C(C)C(C)C1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_I",
     "[H][C@@]2(C(N1CCCC1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_pyrrolidine",
@@ -16,16 +16,16 @@ systems_map = {
 }
 
 
-# def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple: 
-#     substructure = None
-#     for system, name in systems_map.items():
-#         if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
-#             substructure = Chem.MolFromSmarts(system)
-#             matches = mol.GetSubstructMatches(substructure)
-#             return substructure, matches, name
+def find_smarts_substructure(systems_map: dict, mol: Chem.rdchem.Mol) -> bool | Chem.rdchem.Mol | tuple: 
+    substructure = None
+    for system, name in systems_map.items():
+        if mol.HasSubstructMatch(Chem.MolFromSmarts(system)):
+            substructure = Chem.MolFromSmarts(system)
+            matches = mol.GetSubstructMatches(substructure)
+            return substructure, matches, name
 
-#     if substructure is None:
-#         return False
+    if substructure is None:
+        return False
         
 
 def classifier(smiles: str) -> tuple:
