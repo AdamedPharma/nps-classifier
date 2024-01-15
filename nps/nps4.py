@@ -29,6 +29,7 @@ def classifier(smiles: str, systems_map_IV: dict) -> tuple:
         mol = Chem.MolFromSmiles(smiles)
         mw = round(Descriptors.ExactMolWt(mol), 2)
         permitted_atoms = [17, 9, 35, 53, 6, 8, 7, 16]
+        mol2move = mol
         # fluorine, chlorine, bromine, iodine, carbon, oxygen, nitrogen, sulfur
         desc = []
         if mw <= 500:
