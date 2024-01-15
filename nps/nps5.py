@@ -163,25 +163,25 @@ def classifier(smiles: str, systems_map: dict):
                         desc = functional(s, desc)
                     
                     desc = " ".join(desc)
-                    return True, desc, mol2move
+                    return True, desc, suspected, mol2move
     
                 else:
                     desc.append("Struktura główna nie została znaleziona.")
                     desc = " ".join(desc)
-                    return False, desc, None
+                    return False, desc, None, mol2move
                     
             else:
                 desc.append("Substancja zawiera niedozwolone atomy")
                 desc = " ".join(desc)
-                return False, desc, None
+                return False, desc, None, mol2move
     
         else:
             desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
             desc = " ".join(desc)
-            return False, desc, None  # mw above 600
+            return False, desc, None, mol2move  # mw above 600
             
     except Exception:
-        return False, "Do weryfikacji", None
+        return False, "Do weryfikacji", None, mol2move
 
 
 # res, desc, mol2move = classifier("CN1C(=O)CN=C(C2=C1C=CC(=C2)Cl)CN(C)C(C)=O", systems_map_V)
