@@ -1,5 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem import Descriptors
+from typing import Union
 
 
 systems_map_IV = {
