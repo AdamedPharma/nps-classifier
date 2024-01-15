@@ -501,7 +501,7 @@ def classifier(smiles: str, systems_map: dict) -> tuple:
 
         mw = round(Descriptors.ExactMolWt(mol), 2)
         if mw <= 500:
-            desc.append(f"Masa molowa: {mw}.")
+            desc.append(f"Masa cząsteczkowa: {mw}.")
             if find_substructure(systems_map, mol) is not False:
                 substructure, matches, name = find_substructure(systems_map, mol)
                 desc.append(f"Znaleziono układ cykliczny: {name}.")
