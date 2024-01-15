@@ -217,7 +217,7 @@ def classifier(smiles: str, systems_map: dict):
             return False, desc, None, mol2move
 
     except Exception:
-        return False, "Do weryfikacji", None
+        return False, "Do weryfikacji", None, mol2move
 
 
 # cns = ["CCCCCN1C=C(C2=CC=CC=C21)C(=O)C3=CC=CC4=CC=CC=C43", "CC(C)[C@@H](C(=O)OC)NC(=O)C1=CN(C2=CC=CC=C21)CCCCCF", "CCCCCN1C=C(C2=CC=CC=C21)C(=O)C3=CC=C(C=C3)OC", "C1=CC=C2C(=C1)C(=CN2CCCCCF)C(=O)OC3=CC=CC4=C3N=CC=C4 ",
