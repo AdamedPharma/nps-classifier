@@ -5,22 +5,22 @@ from typing import Union
 
 
 systems_map_III = {
-    "c1cc2c(cc1)ncc2": "indol-1,3-diyl",  # a
-    "c1cc2c(cc1)n(nc2)": "indazol-1,3-diyl",  # b  # [nH0] - cannot have s
-    "c3cc4ncnc4cc3": "benzimidazol-1,2-diyl izomer I",  # c
-    "c1cc2ncn(c2cc1)": "benzimidazol-1,2-diyl izomer II",  # d # łącznik to **
-    "c1c2c(ncc1)c(cn2)": "4-azaindol-1,3-diyl",  # e
-    "c1c2c(ncc1)c(nn2)": "4-azaindazol-1,3-diyl",  # f
-    "c1c2c(cnc1)c(cn2)": "5-azaindol-1,3-diyl",  # g
-    "c1c2c(cnc1)c(nn2)": "5-azaindazol-1,3-diyl",  # h
-    "c1cc2c(cn1)ncc2": "6-azaindol-1,3-diyl",  # i
-    "c1cc2c(cn1)n(nc2)": "6-azaindazol-1,3-diyl",  # j
-    "c1cc2c(nc1)ncc2": "7-azaindol-1,3-diyl",  # k
-    "c1cc2c(nc1)n(nc2)": "7-azaindazol-1,3-diyl",  # l
-    "c3cc2c1cc(ccc1nc2cc3)": "karbazol-1,4-diyl",  # m
-    "*n3nc(cc3)c4ccccc4": "pirazol-1,5-diyl",  # m
-    "*n2nc(cc2c1ccccc1)": "pirazol-1,3-diyl",  # o
-    "O=C2c1ccc(cc1N(C=C2))": "4-chinolon-1,3-diyl"  # p
+    "c1cc2c(cc1)ncc2": "indol-1,3-diyl",  # 
+    "c1cc2c(cc1)n(nc2)": "indazol-1,3-diyl",  # b  # [nH0]
+    "c3cc4ncnc4cc3": "benzimidazol-1,2-diyl izomer I",  # 
+    "c1cc2ncn(c2cc1)": "benzimidazol-1,2-diyl izomer II",  # 
+    "c1c2c(ncc1)c(cn2)": "4-azaindol-1,3-diyl",  # 
+    "c1c2c(ncc1)c(nn2)": "4-azaindazol-1,3-diyl",  #
+    "c1c2c(cnc1)c(cn2)": "5-azaindol-1,3-diyl",  # 
+    "c1c2c(cnc1)c(nn2)": "5-azaindazol-1,3-diyl",  # 
+    "c1cc2c(cn1)ncc2": "6-azaindol-1,3-diyl",  # 
+    "c1cc2c(cn1)n(nc2)": "6-azaindazol-1,3-diyl",  # 
+    "c1cc2c(nc1)ncc2": "7-azaindol-1,3-diyl",  # 
+    "c1cc2c(nc1)n(nc2)": "7-azaindazol-1,3-diyl",  # 
+    "c3cc2c1cc(ccc1nc2cc3)": "karbazol-1,4-diyl",  # 
+    "*n3nc(cc3)c4ccccc4": "pirazol-1,5-diyl",  # 
+    "*n2nc(cc2c1ccccc1)": "pirazol-1,3-diyl",  # 
+    "O=C2c1ccc(cc1N(C=C2))": "4-chinolon-1,3-diyl"  # 
 }
 
 
@@ -128,8 +128,8 @@ def classifier(smiles: str, systems_map: dict):
         desc = []
         mol2move = mol
 
-        if find_smarts_substructure(systems_map_V, mol) is not False:
-            substructure, matches, name = find_smarts_substructure(systems_map_V, mol)
+        if find_smarts_substructure(systems_map_III, mol) is not False:
+            substructure, matches, name = find_smarts_substructure(systems_map_III, mol)
             desc.append(f"Układ cykliczny grupy podstawowej: {name}.")
             mw = round(Descriptors.ExactMolWt(mol), 2)
             desc.append(f"Masa cząsteczkowa: {mw}.")
