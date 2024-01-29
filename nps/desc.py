@@ -12,7 +12,8 @@ from nps.nps6 import systems_map_VI
 
 
 def main(smiles: str):
-    
+
+    description = ""
     if nps6.classifier(smiles, systems_map_VI):
         res_VI, desc_VI, _, _ = nps6.classifier(smiles, systems_map_VI)
         if res_VI:
