@@ -28,27 +28,27 @@ def main(smiles: str):
 
     if nps5.classifier(smiles, systems_map_V):
         res_V, desc_V, suspected_V, mol = nps5.classifier(smiles, systems_map_V)
-        if res_V:
+        if res_V is True and res_VI is False:
             suspected = suspected_V
 
     if nps4.classifier(smiles, systems_map_IV):
         res_IV, desc_IV, suspected_IV, mol = nps4.classifier(smiles, systems_map_IV)
-        if res_IV:
+        if res_IV is True and res_VI is False and res_V is False:
             suspected = suspected_IV
 
     if nps12.classifier(smiles, systems_map_II):
         res_II, desc_II, suspected_II, mol = nps12.classifier(smiles, systems_map_II)
-        if res_II:
+        if res_II is True and res_VI is False and res_V is False and res_IV is False:
             suspected = suspected_II
 
     if nps12.classifier(smiles, systems_map_I):
         res_I, desc_I, suspected_I, mol = nps12.classifier(smiles, systems_map_I)
-        if res_I:
+        if res_I is True and res_VI is False and res_V is False and res_IV is False and res_II is False:
             suspected = suspected_I
         
     if nps3.classifier(smiles, systems_map_III):
         res_III, desc_III, suspected_III, mol = nps3.classifier(smiles, systems_map_III)
-        if res_III:
+        if res_III is True and res_VI is False and res_V is False and res_IV is False and res_II is False and res_I is False:
             suspected = suspected_III
     else:
         suspected = ()
