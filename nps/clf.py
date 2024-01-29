@@ -13,7 +13,7 @@ from nps.nps6 import systems_map_VI
 
 def main(smiles: str):
 
-    predict = ""
+    predict = "nie podlega" 
     if nps6.classifier(smiles, systems_map_VI):
         res_VI, _, _, _ = nps6.classifier(smiles, systems_map_VI)
         if res_VI:
@@ -42,8 +42,6 @@ def main(smiles: str):
     if nps3.classifier(smiles, systems_map_III):
         res_III, _, _, _ = nps3.classifier(smiles, systems_map_III)
         if res_III:
-            predict = "NPS_III"
-    else:
-        predict = "nie podlega" 
+            predict = "NPS_III" 
 
     return predict
