@@ -25,27 +25,27 @@ def main(smiles: str):
         if res_VI:
             suspected = suspected_VI
 
-    elif nps5.classifier(smiles, systems_map_V):
+    if nps5.classifier(smiles, systems_map_V):
         res_V, desc_V, suspected_V, _ = nps5.classifier(smiles, systems_map_V)
         if res_V:
             suspected = suspected_V
 
-    elif nps4.classifier(smiles, systems_map_IV):
+    if nps4.classifier(smiles, systems_map_IV):
         res_IV, desc_IV, suspected_IV, _ = nps4.classifier(smiles, systems_map_IV)
         if res_IV:
             suspected = suspected_IV
 
-    elif nps12.classifier(smiles, systems_map_II):
+    if nps12.classifier(smiles, systems_map_II):
         res_II, desc_II, suspected_II, _ = nps12.classifier(smiles, systems_map_II)
         if res_II:
             suspected = suspected_II
 
-    elif nps12.classifier(smiles, systems_map_I):
+    if nps12.classifier(smiles, systems_map_I):
         res_I, desc_I, suspected_I, _ = nps12.classifier(smiles, systems_map_I)
         if res_I:
             suspected = suspected_I
         
-    elif nps3.classifier(smiles, systems_map_III):
+    if nps3.classifier(smiles, systems_map_III):
         res_III, desc_III, suspected_III, _ = nps3.classifier(smiles, systems_map_III)
         if res_III:
             suspected = suspected_III
