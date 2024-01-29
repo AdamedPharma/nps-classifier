@@ -4,9 +4,9 @@ from typing import Union
 
 
 systems_map_IV = {
-    "structure_I": "C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1",
-    "structure_III": "C(c1ccccc1)CN1CCC(Nc2ccccc2)CC1",
-    "structure_II": "C(=O)N(c1ccccc1)C1CCNCC1"
+    "C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1": "structure_I",
+    "C(c1ccccc1)CN1CCC(Nc2ccccc2)CC1":"structure_III",
+    "C(=O)N(c1ccccc1)C1CCNCC1":"structure_II"
 }
 
 
