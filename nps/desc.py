@@ -21,27 +21,27 @@ def main(smiles: str):
 
     if nps5.classifier(smiles, systems_map_V):
         res_V, desc_V, _, _ = nps5.classifier(smiles, systems_map_V)
-        if res_V:
+        if res_V is True and res_VI is False:
             description = desc_V
 
     if nps4.classifier(smiles, systems_map_IV):
         res_IV, desc_IV, _, _ = nps4.classifier(smiles, systems_map_IV)
-        if res_IV:
+        if res_IV is True and res_VI is False and res_V is False:
             description = desc_IV
 
     if nps12.classifier(smiles, systems_map_II):
         res_II, desc_II, _, _ = nps12.classifier(smiles, systems_map_II)
-        if res_II:
+        if res_II is True and res_VI is False and res_V is False and res_IV is False:
             description = desc_II
 
     if nps12.classifier(smiles, systems_map_I):
         res_I, desc_I, _, _ = nps12.classifier(smiles, systems_map_I)
-        if res_I:
+        if res_I is True and res_VI is False and res_V is False and res_IV is False and res_II is False:
             description = desc_I
         
     if nps3.classifier(smiles, systems_map_III):
         res_III, desc_III, _, _ = nps3.classifier(smiles, systems_map_III)
-        if res_III:
+        if res_III is True and res_VI is False and res_V is False and res_IV is False and res_II is False and res_I is False:
             description = desc_III
     else:
         description = "" 
