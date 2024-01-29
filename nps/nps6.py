@@ -4,7 +4,7 @@ from typing import Union
 
 
 systems_map_VI = {
-    # "NC(=O)[C@]1C=C2c3cccc4c3c(cn4)C[C@@]2NC1": "structure_II_II",
+    "[H][C@@]2(C(N)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_II",
     "[H][C@@]2(C(N1C(C)CC(C)1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_II",
     "[H][C@@]2(C(N1C(C)C(C)C1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_azetidine_I",
     "[H][C@@]2(C(N1CCCC1)=O)C=C1c3cccc4[nH]cc(C[C@@]1([H])NC2)c34": "structure_II_pyrrolidine",
@@ -46,7 +46,7 @@ def classifier(smiles: str, systems_map_VI: dict) -> tuple:
                     if "structure_II" in name:
                         desc.append(f"Znaleziono strukturę II.")
                         desc = " ".join(desc)
-                        return True, desc, suspected
+                        return True, desc, suspected, mol2move
                     else:
                         desc.append(f"Znaleziono strukturę I.")
                         desc = " ".join(desc)
@@ -60,7 +60,7 @@ def classifier(smiles: str, systems_map_VI: dict) -> tuple:
         else:
             desc.append(f"Dopuszczalna masa molowa została przekroczona: {mw}.")
             desc = " ".join(desc)
-            return False, desc, None  # mw above 500
+            return False, desc, None, mol2move  # mw above 500
             
     except Exception:
         return False, "Do weryfikacji", None, mol2move
