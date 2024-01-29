@@ -3,9 +3,6 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import Fragments
 from typing import Union
 
-import warnings
-
-warnings.filterwarnings("ignore")
 
 systems_map_III = {
     "c1cc2c(cc1)ncc2": "indol-1,3-diyl",  # a
