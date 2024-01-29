@@ -18,15 +18,42 @@ from io import BytesIO
 
 
 def main(smiles: str):
-    
-    _, _, suspected_I, mol = nps12.classifier(smiles, systems_map_I)
-    _, _, suspected_II, mol = nps12.classifier(smiles, systems_map_II)
+
+    suspected = () 
+    if nps6.classifier(smiles, systems_map_VI):
+        res_VI, desc_VI, suspected_VI, _ = nps6.classifier(smiles, systems_map_VI)
+        suspected = suspected_VI
+
+    elif nps5.classifier(smiles, systems_map_V):
+        res_V, desc_V, suspected_V, _ = nps5.classifier(smiles, systems_map_V)
+        suspected = suspected_V
+
+    elif nps4.classifier(smiles, systems_map_IV):
+        res_IV, desc_IV, suspected_IV, _ = nps4.classifier(smiles, systems_map_IV)
+        suspected = suspected_IV
+
+    elif nps12.classifier(smiles, systems_map_II):
+        res_II, desc_II, suspected_II, _ = nps12.classifier(smiles, systems_map_II)
+        suspected = suspected_II
+
+    elif nps12.classifier(smiles, systems_map_I):
+        res_I, desc_I, suspected_I, _ = nps12.classifier(smiles, systems_map_I)
+        suspected = suspected_I
+        
+    elif nps3.classifier(smiles, systems_map_III):
+        res_III, desc_III, suspected_III, _ = nps3.classifier(smiles, systems_map_III)
+        suspected = suspected_III
+    else:
+        suspected = ()
+        
+    # _, _, suspected_I, mol = nps12.classifier(smiles, systems_map_I)
+    # _, _, suspected_II, mol = nps12.classifier(smiles, systems_map_II)
     # _, _, suspected_III, mol = nps3.classifier(smiles, systems_map_III)
     # _, _, suspected_IV, mol = nps4.classifier(smiles, systems_map_IV)
     # _, _, suspected_V, mol = nps5.classifier(smiles, systems_map_V)
     # _, _, suspected_VI, mol = nps6.classifier(smiles, systems_map_VI)
     
-    suspected = ()
+    # suspected = ()
     
     # if suspected_VI:
     #     suspected = suspected_VI
@@ -36,10 +63,10 @@ def main(smiles: str):
     #     suspected = suspected_IV
     # elif suspected_II:
         # suspected = suspected_II
-    if suspected_I:
-        suspected = suspected_I
-    elif suspected_II:
-        suspected = suspected_II
+    # if suspected_I:
+    #     suspected = suspected_I
+    # elif suspected_II:
+    #     suspected = suspected_II
 
     img = Draw.MolsToGridImage([mol], molsPerRow=1,
                                highlightAtomLists=[list(suspected)], subImgSize=(1200, 1200))
