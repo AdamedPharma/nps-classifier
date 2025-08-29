@@ -10,8 +10,8 @@ systems_map_V = {
     # _tiofuran R1 is tiofuran
     
     # loprazolam
-    "CN1CCN(CC1)\C=C1/N=C2N(C1=O)C1=C([C,N]=[C,N][C,N]=[C,N]1)C=NC2": "lop_benzen loprazolamu",
-    "CN1CCN(CC1)\C=C1/N=C2N(C1=O)C1=C([C,S]=[C,S]=[C,S]1)C=NC2": "lop_tiofuran loprazolam",
+    r"CN1CCN(CC1)\C=C1/N=C2N(C1=O)C1=C([C,N]=[C,N][C,N]=[C,N]1)C=NC2": "lop_benzen loprazolamu",
+    r"CN1CCN(CC1)\C=C1/N=C2N(C1=O)C1=C([C,S]=[C,S]=[C,S]1)C=NC2": "lop_tiofuran loprazolam",
 
     # ketazolam
     "C1=NC=C2N1C1=C([C,N]=[C,N][C,N]=[C,N]1)C1OC=CC(=O)N1C2": "3keta_benzen ketazolamu",
