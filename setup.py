@@ -8,7 +8,7 @@ setup(
     author='PD',
     install_requires=[
       "rdkit>=2022.3.4",
-      "matplotlib==3.8.0",
-      "numpy==1.26.0",
+      "matplotlib==3.10.8",
+      "numpy==2.4.2",
     ]
 )
